@@ -8,7 +8,7 @@ var config = {
 };
 
 // Later on when running from Google Cloud, env variables will be passed in container cloud connection config
-if(process.env.NODE_ENV === 'production') {
+if(process.env.NODE_ENV === 'production**') {
   console.log('Running from cloud. Connecting to DB through GCP socket.');
   config.socketPath = `/cloudsql/${process.env.INSTANCE_CONNECTION_NAME}`;
 }
