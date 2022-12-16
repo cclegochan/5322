@@ -11,7 +11,7 @@ app.get('/status', (req, res) => res.send('Success.'));
 
 app.get('/class', (req, res) => {
   connection.query(
-    "SELECT * FROM `class`",
+    "SELECT * FROM class",
     (error, results, fields) => {
       if (error) throw error;
       res.json(results);
