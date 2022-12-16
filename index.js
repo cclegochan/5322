@@ -5,7 +5,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const connection = require('./database');
 
-app.get('/', (req, res) => res.send('Try: /class, /class/1, or /section, /section/1, or /section/result/1'));
+app.get('/', (req, res) => res.send('Try: 122344555/class, /class/1, or /section, /section/1, or /section/result/1'));
 
 app.get('/status', (req, res) => res.send('Success.'));
 
