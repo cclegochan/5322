@@ -17,6 +17,7 @@ app.get('/class', (req, res) => {
       res.json(results);
     }
   );
+ 
 });
 app.route('/class/:id')
   .get((req, res, next) => {
