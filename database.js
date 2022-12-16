@@ -29,7 +29,7 @@ connection.connect(function(err) {
     console.error('Error connecting: ' + err.stack);
     connection = reconnect(connection);
   }
-  console.log('Connected as thread id: ' + connection.threadId);
+  console.log('Connected');
 });
 
 function reconnect(connection){
