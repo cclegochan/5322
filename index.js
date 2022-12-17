@@ -111,7 +111,9 @@ app.route('/section/result/:id')
 // });
 app.post('/create', function(req, res){
         console.log("enter create");
-        
+       
+        console.log( req.body);
+
         var _class_section_id =  req.body.class_section_id;
         var _name= req.body.name;
         var _phone= req.body.phone;
