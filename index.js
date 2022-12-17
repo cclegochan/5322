@@ -110,6 +110,9 @@ app.route('/section/result/:id')
 //     });
 // });
 app.post('/create', function(req, res){
+        console.log("enter create");
+        console.log(req);
+        console.log("end req");
         var store = '';
 
         req.on('data', function(data) 
@@ -117,6 +120,7 @@ app.post('/create', function(req, res){
             store += data;
         });
         console.log(store);
+        console.log("end store");
         var _class_section_id =  store["class_section_id"];
         var _name= store["name"];
         var _phone= store["phone"];
