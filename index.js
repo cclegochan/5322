@@ -15,18 +15,17 @@ app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
   // Request headers you wish to allow
-  //res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
 
   // Set to true if you need the website to include cookies in the requests sent
   // to the API (e.g. in case you use sessions)
-  //res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Credentials', true);
 
   // Pass to next layer of middleware
   next();
 });
-app.get('/', (req, res) => res.send('Try: 122344555/class, /class/1, or /section, /section/1, or /section/result/1'));
 
-app.get('/status', (req, res) => res.send('Success.'));
+app.get('/', (req, res) => res.send('Success.'));
 
 app.get('/class', (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -51,7 +50,7 @@ app.route('/class/:id')
         res.json(results);
       }
     );
-  });
+});
 
 
 app.get('/class_section', (req, res) => {
@@ -131,6 +130,30 @@ app.post('/create', function(req, res,next){
 
         res.json("OK");
    
+});
+
+app.route('/enrol').post((req, res,next)=>{
+  console.log("enter create");
+  console.log(req.params);
+  console.log(req.body);
+
+  var _class_section_id =  req.body.class_section_id;
+  var _name= req.body.name;
+  var _phone= req.body.phone;
+  var _email= req.body.email;
+  
+  connection.query('insert into form set ?', {
+      class_section_id: _class_section_id,
+      name: _name,
+      phone: _phone,
+      email: _email
+  }, function(err, fields){
+      if (err)
+          throw err;
+  });
+
+  res.json("OK");
+
 });
 
 // Use port 8080 by default, unless configured differently in Google Cloud
