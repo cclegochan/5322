@@ -93,7 +93,7 @@
 
 
       }
-      function deleteEnrolment(id){
+      function deleteEnrolment(section_id,id){
         
         $.ajax({
             url: apiServer + "/deleteEnrolment",
@@ -109,7 +109,7 @@
             contentType: "application/json;charset=utf-8",
             success: function(returnData){
                 console.log(returnData);
-                result($('#enrol_section_id').val());
+                result(section_id);
             },
             error: function(xhr, ajaxOptions, thrownError){
                 console.log(xhr.status);
@@ -126,6 +126,7 @@
         $('#enrolForm').modal('show');
       }
        function result(section_id){
+        
          $('#result_table').html();
           $.ajax({
             url: apiServer+"/section/result/"+section_id,
@@ -144,11 +145,11 @@
             
               data.forEach(element => {
                 var _row = "<tr>";
-                _row+= "<td>"+element.id+"</td>";
+                _row+= "<td>"+element.form_id+"</td>";
                 _row+= "<td>"+element.name+"</td>"   
                 _row+= "<td>"+element.phone+"</td>"   
                 _row+= "<td>"+element.email+"</td>"   
-                _row+="<td><button type='button' class='btn btn-danger' onclick='deleteEnrolment("+element.id+")'>Delete</button></td>"
+                _row+="<td><button type='button' class='btn btn-danger' onclick='deleteEnrolment("+section_id+","+element.form_id+")'>Delete</button></td>"
                 
                 _row+= "</tr>"       
                 _result += _row;
