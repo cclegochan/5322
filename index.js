@@ -110,7 +110,7 @@ app.route('/section/result/:id')
 //     });
 // });
 app.post('/create', function(req, res){
-        console.log(req.body);
+        console.log(req);
         if(req.body == null){
           var _class_section_id =   1;
           var _name= "Chan Tai Man";

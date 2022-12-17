@@ -65,20 +65,21 @@
     }
       
       function submitEnrolment(){
+        
         $.ajax({
              url: apiServer + "/create",
             data: JSON.stringify({
-                class_section_id: $('enrol_section_id').val(),
-                name: $('enrol_name').val(),
-                phone: $('enrol_phone').val(),
-                email: $('enrol_email').val(),
+                class_section_id: $('#enrol_section_id').val(),
+                name: $('#enrol_name').val(),
+                phone: $('#enrol_phone').val(),
+                email: $('#enrol_email').val(),
             }),
             type: "POST",
             dataType: "json",
             contentType: "application/json;charset=utf-8",
             success: function(returnData){
                 console.log(returnData);
-                result($('enrol_section_id').val());
+                result($('#enrol_section_id').val());
             },
             error: function(xhr, ajaxOptions, thrownError){
                 console.log(xhr.status);
