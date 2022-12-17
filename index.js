@@ -11,6 +11,8 @@ app.get('/', (req, res) => res.send('Try: 122344555/class, /class/1, or /section
 app.get('/status', (req, res) => res.send('Success.'));
 
 app.get('/class', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
   connection.query(
     "SELECT * FROM class",
     (error, results, fields) => {
@@ -22,6 +24,8 @@ app.get('/class', (req, res) => {
 });
 app.route('/class/:id')
   .get((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
     connection.query(
       "SELECT * FROM `class` WHERE id = ?", req.params.id,
       (error, results, fields) => {
@@ -33,6 +37,8 @@ app.route('/class/:id')
 
 
 app.get('/class_section', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
   connection.query(
     "SELECT c.*,cs.id as 'section_id',cs.date,cs.limit FROM `class_section` cs,`class` c where cs.class_id = c.id",
     (error, results, fields) => {
@@ -44,6 +50,8 @@ app.get('/class_section', (req, res) => {
 
 app.route('/class_section/:id')
   .get((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
     connection.query(
       "SELECT * FROM `class_section` WHERE id = ?", req.params.id,
       (error, results, fields) => {
@@ -67,6 +75,8 @@ app.route('/section/result/:id')
 
   app.route('/section/result/:id')
   .post((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
     connection.query(
       "SELECT * FROM `form` WHERE class_section_id = ?", req.params.id,
       (error, results, fields) => {
@@ -82,6 +92,8 @@ app.route('/section/result/:id')
 //     });
 // });
 app.get('/create', function(req, res){
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
         if(req.body == null){
           var _class_section_id =   1;
           var _name= "Chan Tai Man";

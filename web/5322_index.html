@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+           <meta name="google-site-verification" content="0TP-WoToywK2pXW7uTmJpf8wQf8TMgzk0PCCXOR1Fh4" />
+
+    <title>5322 Fall 2022  21001556g Final Project</title> 
+
+   
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="icon" type="image/png" href="img/legochanpro_white.png">
+
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+	
+    <link href="css/lego_css.min.css" rel="stylesheet" type="text/css"> 
+    <link href="vendor/magnific-popup/magnific-popup.css" rel="stylesheet" type="text/css"> 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
+    <script>
+      var apiServer = "https://api-mwzw3w4lvq-de.a.run.app";
+
+      $( document ).ready(function() {
+          getData();
+      });
+      function getData(){
+        $.ajax({
+            url: apiServer+"/class",
+            type: 'GET',
+            dataType: 'jsonp',
+            cors: true ,
+            contentType:'application/json',
+            //secure: true,
+            // beforeSend: function (xhr) {
+            //   xhr.setRequestHeader ("Access-Control-Allow-Origin","*");
+            // },
+            success: function (data){
+              $('#class_table').html(data);
+            }
+        });
+    }
+    </script>
+  </head>
+
+  <body id="page-top" style="background-color:#FFFFFF;">
+  
+	<div style="background-color:#FFFFFF;width:100%;position:fixed; bottom:20%;z-index:-1;opacity:0.1">
+	<img src='https://www.polyu.edu.hk/assets/img/main-logo-3x.png' width='100%'/>
+  5322 Fall 2022  21001556g
+	</div>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg bg-secondary fixed-top text-uppercase" id="mainNav">
+      <div class="container">
+        <h2>5322 Fall 2022  21001556g</h2>
+        <!-- <a class="navbar-brand js-scroll-trigger" href="#page-top"><img height="50px" src="img/legochanpro_white_long.png"/></a> -->
+        <button class="navbar-toggler navbar-toggler-right text-uppercase bg-primary text-white rounded btn-outline-white" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          Menu
+          <i class="fa fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto"> 
+		  <li class="nav-item mx-0 mx-lg-1">
+              <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#about">Class List</a>
+            </li>
+			<li class="nav-item mx-0 mx-lg-1">
+              <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#work">Result</a>
+            </li>
+
+          </ul>
+		  
+        </div>
+      </div>
+    </nav>
+
+
+    <!-- About Section -->
+    <section class="bg-primary text-white mb-0" id="about" style="margin-top:200px">
+      <div class="container">
+        <h2 class="text-center text-uppercase text-white">Class List</h2>
+        <hr class="star-light mb-5">
+        <div class="row">
+		      <table id="class_table"></table>
+
+      </div>
+    </section>
+
+ 
+   
+   
+
+
+    <div class="scroll-to-top d-lg-none position-fixed ">
+      <a class="js-scroll-trigger d-block text-center text-white rounded" href="#page-top">
+        <i class="fa fa-chevron-up"></i>
+      </a>
+    </div>
+
+  
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="vendor/magnific-popup/jquery.magnific-popup.min.js"></script>
+
+    <!-- Contact Form JavaScript -->
+    <script src="js/jqBootstrapValidation.js"></script>
+    <script src="js/contact_me.js"></script>
+    <script src="js/lego_js.min.js"></script>
+
+  </body>
+
+</html>
