@@ -64,7 +64,7 @@
         });
     }
       
-      function submit(){
+      function submitEnrolment(){
         $.ajax({
              url: apiServer + "/create",
             data: JSON.stringify({
@@ -129,6 +129,7 @@
               $('#result_table').html(_result);
             }
         });
+        $('#enrolForm').modal('hide');
           window.location.href="#result_table";
 
        } 
@@ -253,7 +254,7 @@
     
           </div>
           <div class="modal-footer d-flex justify-content-center">
-            <button class="btn btn-deep-orange" onclick=" submit();">Enrol</button>
+            <button class="btn btn-deep-orange" onclick="submitEnrolment();">Enrol</button>
           </div>
         </div>
       </div>
