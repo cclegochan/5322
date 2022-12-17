@@ -110,19 +110,11 @@ app.route('/section/result/:id')
 //     });
 // });
 app.post('/create', function(req, res){
-        console.log(req);
-        if(req.body == null){
-          var _class_section_id =   1;
-          var _name= "Chan Tai Man";
-          var _phone=  "12345678";
-          var _email= "test@abc.com";
-        }else{
 
-          var _class_section_id =  req.body.class_section_id;
-          var _name= req.body.name ;
-          var _phone= req.body.phone;
-          var _email= req.body.email;
-        }
+        var _class_section_id =  req.body.class_section_id;
+        var _name= req.body.name ;
+        var _phone= req.body.phone;
+        var _email= req.body.email;
         
         connection.query('insert into form set ?', {
             class_section_id: _class_section_id,
