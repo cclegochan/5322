@@ -31,7 +31,7 @@
       });
       function getData(){
         $.ajax({
-            url: apiServer+"/class",
+            url: apiServer+"/class_section",
             type: 'GET',
             dataType: 'json',
             contentType:'application/json',
@@ -40,12 +40,65 @@
             //   xhr.setRequestHeader ("Access-Control-Allow-Origin","*");
             // },
             success: function (data){
-              alert(data);
-              $('#class_table').html(data);
+              var _result = "";
+              data.forEach(element => {
+                var _row = "<tr>";
+                _row+= "<td>"+element.section_id+"</td>";
+                _row+= "<td>"+element.class_name+"</td>"   
+                _row+= "<td>"+element.category+"</td>"   
+                _row+= "<td>"+element.description+"</td>"   
+                _row+= "<td>"+element.venue+"</td>"   
+                _row+= "<td>"+element.guest+"</td>" 
+                _row+= "<td>"+element.host+"</td>" 
+                _row+= "<td>"+element.date+"</td>" 
+                _row+= "<td>"+element.limit+"</td>" 
+                _row+="<td><button type='button' class='btn btn-success' onclick='enrol("+element.section_id+")'>Enrol</button></td>"
+                _row+="<td><button type='button' class='btn btn-primary' onclick='result("+element.section_id+")'>Check Result</button></td>"
+                
+                _row+= "</tr>"       
+                _result += _row;
+              });
+
+              $('#class_table').html(_result);
             }
         });
     }
-    </script>
+   
+       function result(section_id){
+         $('#result_table').html();
+          $.ajax({
+            url: apiServer+"/section/result/"+section_id,
+            type: 'GET',
+            dataType: 'json',
+            contentType:'application/json',
+            //secure: true,
+            // beforeSend: function (xhr) {
+            //   xhr.setRequestHeader ("Access-Control-Allow-Origin","*");
+            // },
+            success: function (data){
+              var _result = "";
+              data.forEach(element => {
+                var _row = "<tr>";
+                _row+= "<td>"+element.id+"</td>";
+                _row+= "<td>"+element.name+"</td>"   
+                _row+= "<td>"+element.phone+"</td>"   
+                _row+= "<td>"+element.email+"</td>"   
+                _row+="<td><button type='button' class='btn btn-danger' onclick='delete("+element.id+")'>Delete</button></td>"
+                
+                _row+= "</tr>"       
+                _result += _row;
+                $('#result_name').html(element.class_name);
+                $('#result_table').html("Available Space:"+ data.length()+" (Max:" +element.limit+")");
+              });
+             
+              $('#result_table').html(_result);
+            }
+        });
+          window.location.href="#result_table";
+
+       } 
+   
+   </script>
   </head>
 
   <body id="page-top" style="background-color:#FFFFFF;">
@@ -69,7 +122,7 @@
               <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#about">Class List</a>
             </li>
 			<li class="nav-item mx-0 mx-lg-1">
-              <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#work">Result</a>
+              <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#result">Result</a>
             </li>
 
           </ul>
@@ -80,18 +133,59 @@
 
 
     <!-- About Section -->
-    <section class="bg-primary text-white mb-0" id="about" style="margin-top:200px">
+    <section class=" text-dark mb-0" id="about" style="margin-top:150px">
       <div class="container">
-        <h2 class="text-center text-uppercase text-white">Class List</h2>
-        <hr class="star-light mb-5">
+        <h2 class="text-center text-uppercase text-dark">Class List</h2>
+        <hr class="star-dark mb-5">
         <div class="row">
-		      <table id="class_table"></table>
+		      <table  class="table">
+            <th>ID</th>
+             <th>Class Name</th>
+             <th>Cateogry</th> 
+             
+             <th>Description</th> 
+             <th>Venue</th>
+             <th>Guest</th>
+             <th>Host</th>
+             <th>Date & Time</th>
+             <th>Limit</th>
+             <th>Enrol</th>
+             <th>Result</th>
+            <tbody  id="class_table">
+
+
+
+
+
+            </tbody>
+            
+          </table>
 
       </div>
     </section>
 
  
-   
+      <!-- Result Section -->
+      <section class="bg-primary text-white mb-0" id="result" style="margin-top:200px">
+        <div class="container">
+          <h2 class="text-center text-uppercase text-white" id="result_name">Result</h2>
+          <h3 class="text-center text-uppercase text-white" id="result_count"></h3>
+          <hr class="star-light mb-5">
+          <div class="row">
+            <table id=""  class="table">
+               <th>ID</th>
+               <th>Participant</th>
+               <th>Phone</th> 
+               <th>Email</th> 
+              <tbody id="result_table">
+
+
+
+              </tbody>
+            </table>
+  
+        </div>
+      </section>
    
 
 

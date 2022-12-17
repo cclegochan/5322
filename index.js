@@ -82,7 +82,7 @@ app.route('/class_section/:id')
 app.route('/section/result/:id')
   .get((req, res, next) => {
     connection.query(
-      "SELECT * FROM `form` WHERE class_section_id = ?", req.params.id,
+      "SELECT f.*,c.*,cs.limit FROM `form` f, class_section cs , class c WHERE f.class_section_id = cs.id and cs.class_id = c.id and  f.class_section_id = ?", req.params.id,
       (error, results, fields) => {
         if (error) throw error;
         res.json(results);
