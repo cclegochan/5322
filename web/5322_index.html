@@ -67,15 +67,18 @@
       function submitEnrolment(){
         
         $.ajax({
-             url: apiServer + "/create",
-            data: JSON.stringify({
-                class_section_id: $('#enrol_section_id').val(),
-                name: $('#enrol_name').val(),
-                phone: $('#enrol_phone').val(),
-                email: $('#enrol_email').val(),
-            }),
-            type: "POST",
-            dataType: "json",
+            url: apiServer + "/create",
+            data: $('#enrolForm').serialize()
+            
+            // {
+            //     class_section_id: $('#enrol_section_id').val(),
+            //     name: $('#enrol_name').val(),
+            //     phone: $('#enrol_phone').val(),
+            //     email: $('#enrol_email').val(),
+            // }
+            ,
+            method: "POST",
+            dataType: "JSON",
             contentType: "application/json;charset=utf-8",
             success: function(returnData){
                 console.log(returnData);
@@ -237,19 +240,20 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body mx-3">
-              <input type="hidden" id="enrol_section_id" class="form-control validate">
+          <form id="enrolForm">
+          <div class="modal-body mx-3" >
+              <input type="hidden" id="enrol_section_id" name="enrol_section_id" class="form-control validate">
             <div class="md-form mb-5">
-              <input type="text" id="enrol_name"class="form-control validate">
+              <input type="text" id="enrol_name" name="enrol_name" class="form-control validate">
               <label data-error="wrong" data-success="right" for="orangeForm-name">Your name</label>
             </div>
             <div class="md-form mb-5">
-              <input type="email" id="enrol_email" class="form-control validate">
+              <input type="email" id="enrol_email" name="enrol_email" class="form-control validate">
               <label data-error="wrong" data-success="right" for="orangeForm-email">Your email</label>
             </div>
     
             <div class="md-form mb-4">
-              <input type="text" id="enrol_phone" class="form-control validate">
+              <input type="text" id="enrol_phone" name="enrol_phone" class="form-control validate">
               <label data-error="wrong" data-success="right" for="orangeForm-pass">Your phone</label>
             </div>
     
@@ -257,6 +261,7 @@
           <div class="modal-footer d-flex justify-content-center">
             <button class="btn btn-deep-orange" onclick="submitEnrolment();">Enrol</button>
           </div>
+        </form>
         </div>
       </div>
     </div>
