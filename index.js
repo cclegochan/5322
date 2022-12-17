@@ -117,9 +117,9 @@ app.post('/create', function(req, res){
             store += data;
         });
         console.log(store);
-        var _class_section_id =  store.class_section_id;
-        var _name= store.name ;
-        var _phone= store.phone;
+        var _class_section_id =  store["class_section_id"];
+        var _name= store["name"];
+        var _phone= store["phone"];
         var _email= store.email;
         
         connection.query('insert into form set ?', {
