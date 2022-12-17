@@ -28,6 +28,21 @@
 
       $( document ).ready(function() {
           getData();
+          $("#search").keyup(function () {
+            
+            var searchTerm = $("#search").val();
+            var listItem = $('#class_table').children('tr');
+        
+            listItem.each(function(e){
+              if($(this).html().indexOf(searchTerm) < 0){
+                console.log("no");
+                $(this).attr('style','display:none');
+              }else{
+                $(this).attr('style','display:');
+                console.log("yes");
+              }
+            });
+          });
       });
       function getData(){
         $.ajax({
@@ -205,6 +220,9 @@
       <div class="container">
         <h2 class="text-center text-uppercase text-dark">Class List</h2>
         <hr class="star-dark mb-5">
+        <div class="form-group">
+          <input type="text" id="search" class="search form-control" placeholder="What you looking for?">
+        </div>
         <div class="row">
 		      <table  class="table">
             <th>ID</th>
@@ -242,7 +260,9 @@
           <h3 class="text-center text-uppercase text-white" id="result_count"></h4>
           <hr class="star-light mb-5" id='hasResult' style="display:none">
           <div class="row">
-            <table id=""  class="table">
+            <button class="btn btn-warning" onclick="print()">Print Result</button>
+         <br/>
+            <table id="resultss"  class="table">
                <th>ID</th>
                <th>Participant</th>
                <th>Phone</th> 
