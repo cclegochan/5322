@@ -67,15 +67,15 @@
       function submitEnrolment(){
         
         $.ajax({
-            url: apiServer + "/enrol",
+            url: apiServer + "/create",
             data: //$('#enrolForm').serialize()
-            
+            JSON.stringify(
              {
                  class_section_id: $('#enrol_section_id').val(),
                  name: $('#enrol_name').val(),
                  phone: $('#enrol_phone').val(),
                  email: $('#enrol_email').val(),
-             }
+             })
             ,
             method: "POST",
             dataType: "JSON",

@@ -5,9 +5,15 @@ const app = express();
 const bodyParser = require('body-parser');
 const connection = require('./database');
 const e = require('express');
-app.configure(function(){
-  app.use(express.bodyParser());
-});
+
+
+// create application/json parser
+var jsonParser = bodyParser.json()
+ 
+// create application/x-www-form-urlencoded parser
+var urlencodedParser = bodyParser.urlencoded({ extended: false })
+
+
 app.use(function (req, res, next) {
 
   // Website you wish to allow to connect
@@ -110,7 +116,7 @@ app.route('/section/result/:id')
 //         title: '建立新的使用者'
 //     });
 // });
-app.post('/create', function(req, res,next){
+app.post('/create', jsonParser, function(req, res,next){
         console.log("enter create");
         console.log(req.params);
         console.log(req.body);
