@@ -111,20 +111,11 @@ app.route('/section/result/:id')
 // });
 app.post('/create', function(req, res){
         console.log("enter create");
-        console.log(req);
-        console.log("end req");
-        var store = '';
-
-        req.on('data', function(data) 
-        {
-            store += data;
-        });
-        console.log(store);
-        console.log("end store");
-        var _class_section_id =  store["class_section_id"];
-        var _name= store["name"];
-        var _phone= store["phone"];
-        var _email= store.email;
+        
+        var _class_section_id =  req.body.class_section_id;
+        var _name= req.body.name;
+        var _phone= req.body.phone;
+        var _email= req.body.email;
         
         connection.query('insert into form set ?', {
             class_section_id: _class_section_id,
