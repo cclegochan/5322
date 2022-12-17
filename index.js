@@ -9,7 +9,7 @@ const e = require('express');
 
 // create application/json parser
 var jsonParser = bodyParser.json()
- 
+
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
@@ -34,19 +34,6 @@ app.use(function (req, res, next) {
 });
 
 app.get('/', (req, res) => res.send('Success.'));
-
-app.get('/class', (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-
-  connection.query(
-    "SELECT * FROM class",
-    (error, results, fields) => {
-      if (error) throw error;
-      res.json(results);
-    }
-  );
- 
-});
 app.route('/class/:id')
   .get((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -98,71 +85,47 @@ app.route('/section/result/:id')
   });
 
 
-app.route('/section/result/:id')
-  .post((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-
-    connection.query(
-      "SELECT * FROM `form` WHERE class_section_id = ?", req.params.id,
-      (error, results, fields) => {
-        if (error) throw error;
-        res.json(results);
-      }
-    );
-  });
-
-//   app.get('/create', function(req, res){
-//     res.render('create', {
-//         title: '建立新的使用者'
-//     });
-// });
-app.post('/create', jsonParser, function(req, res,next){
-        console.log("enter create");
-        console.log(req.params);
-        console.log(req.body);
-
-        var _class_section_id =  req.body.class_section_id;
-        var _name= req.body.name;
-        var _phone= req.body.phone;
-        var _email= req.body.email;
-        
-        connection.query('insert into form set ?', {
-            class_section_id: _class_section_id,
-            name: _name,
-            phone: _phone,
-            email: _email
-        }, function(err, fields){
-            if (err)
-                throw err;
-        });
-
-        res.json("OK");
-   
-});
-
-app.route('/enrol').post((req, res,next)=>{
+app.post('/create', jsonParser, function (req, res, next) {
   console.log("enter create");
   console.log(req.params);
   console.log(req.body);
 
-  var _class_section_id =  req.body.class_section_id;
-  var _name= req.body.name;
-  var _phone= req.body.phone;
-  var _email= req.body.email;
-  
+  var _class_section_id = req.body.class_section_id;
+  var _name = req.body.name;
+  var _phone = req.body.phone;
+  var _email = req.body.email;
+
   connection.query('insert into form set ?', {
-      class_section_id: _class_section_id,
-      name: _name,
-      phone: _phone,
-      email: _email
-  }, function(err, fields){
-      if (err)
-          throw err;
+    class_section_id: _class_section_id,
+    name: _name,
+    phone: _phone,
+    email: _email
+  }, function (err, fields) {
+    if (err)
+      throw err;
   });
 
   res.json("OK");
 
 });
+app.post('/deleteEnrolment', jsonParser, function (req, res, next) {
+  console.log("enter delete");
+  console.log(req.params);
+  console.log(req.body);
+
+  var _form_id = req.body.form_id;
+
+
+  connection.query('delete from form where id = ' + _form_id
+  , function (err, fields) {
+    if (err)
+      throw err;
+  });
+
+  res.json("OK");
+
+});
+
 
 // Use port 8080 by default, unless configured differently in Google Cloud
 const port = process.env.PORT || 8080;

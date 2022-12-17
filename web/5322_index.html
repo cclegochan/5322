@@ -63,7 +63,7 @@
             }
         });
     }
-      
+     
       function submitEnrolment(){
         
         $.ajax({
@@ -75,6 +75,33 @@
                  name: $('#enrol_name').val(),
                  phone: $('#enrol_phone').val(),
                  email: $('#enrol_email').val(),
+             })
+            ,
+            method: "POST",
+            dataType: "JSON",
+            contentType: "application/json;charset=utf-8",
+            success: function(returnData){
+                console.log(returnData);
+                result($('#enrol_section_id').val());
+            },
+            error: function(xhr, ajaxOptions, thrownError){
+                console.log(xhr.status);
+                console.log(thrownError);
+            }
+        });
+
+
+
+      }
+      function deleteEnrolment(id){
+        
+        $.ajax({
+            url: apiServer + "/deleteEnrolment",
+            data: //$('#enrolForm').serialize()
+            JSON.stringify(
+             {
+                 form_id: id,
+                 
              })
             ,
             method: "POST",
@@ -121,7 +148,7 @@
                 _row+= "<td>"+element.name+"</td>"   
                 _row+= "<td>"+element.phone+"</td>"   
                 _row+= "<td>"+element.email+"</td>"   
-                _row+="<td><button type='button' class='btn btn-danger' onclick='delete("+element.id+")'>Delete</button></td>"
+                _row+="<td><button type='button' class='btn btn-danger' onclick='deleteEnrolment("+element.id+")'>Delete</button></td>"
                 
                 _row+= "</tr>"       
                 _result += _row;
