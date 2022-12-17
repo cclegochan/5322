@@ -109,9 +109,7 @@ app.route('/section/result/:id')
 //         title: '建立新的使用者'
 //     });
 // });
-app.get('/create', function(req, res){
-  res.setHeader('Access-Control-Allow-Origin', '*');
-
+app.post('/create', function(req, res){
         if(req.body == null){
           var _class_section_id =   1;
           var _name= "Chan Tai Man";
