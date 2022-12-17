@@ -91,7 +91,7 @@ app.route('/section/result/:id')
   });
 
 
-  app.route('/section/result/:id')
+app.route('/section/result/:id')
   .post((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
 
@@ -109,10 +109,10 @@ app.route('/section/result/:id')
 //         title: '建立新的使用者'
 //     });
 // });
-app.post('/create', function(req, res){
+app.post('/create', function(req, res,next){
         console.log("enter create");
-       
-        console.log( req.body);
+        console.log(req.params);
+        console.log(req.body);
 
         var _class_section_id =  req.body.class_section_id;
         var _name= req.body.name;
