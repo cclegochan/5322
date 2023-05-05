@@ -34,12 +34,12 @@ app.use(function (req, res, next) {
 });
 
 app.get('/', (req, res) => res.send('Success.'));
-app.route('/class/:id')
+app.route('/user/:id')
   .get((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
 
     connection.query(
-      "SELECT * FROM `class` WHERE id = ?", req.params.id,
+      "SELECT * FROM `user` WHERE id = ?", req.params.id,
       (error, results, fields) => {
         if (error) throw error;
         res.json(results);
