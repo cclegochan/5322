@@ -97,4 +97,35 @@ async function getBalance(userId,btcAddr,dogeAddr) {
         console.log(err);
     }
 }
+async function transaction(type, pin, amount, fromAddr,toAddr) {
+    let btcData;
+    let dogeData;
+
+    try {
+        if(type==="BTC_USD") {
+            let prepareResponse = btcData.prepare_transaction({
+                amounts: amount,
+                from_addresses: fromAddr,
+                to_addresses: toAddr
+            });
+            let createResponse = btcData.create_and_sign_transaction({data: prepareResponse, pin: pin});
+            let txResponse = btcData.submit_transaction({transaction_data: createResponse});
+        }
+        else if(type==="DOGE_USD"){
+            let prepareResponse = dogeData.prepare_transaction({
+                amounts: amount,
+                from_addresses: fromAddr,
+                to_addresses: toAddr
+            });
+            let createResponse = dogeData.create_and_sign_transaction({data: prepareResponse, pin: pin});
+            let txResponse = dogeData.submit_transaction({transaction_data: createResponse});
+        }
+
+
+
+        return {"btcBalance": btcData.data.available_balance , "dogeBalance": dogeData.data.available_balance}
+    } catch (err) {
+        console.log(err);
+    }
+}
 module.exports = {getNewAddrs, getBalance};

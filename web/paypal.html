@@ -66,8 +66,8 @@
   <button class="btn btn-danger" onclick="getResult('N')">No</button>
   <script>
     userId = $.cookie('userId');
-    var apiServer = "http://localhost:8080";
-    //var apiServer = "https://comp5521-api-mwzw3w4lvq-uc.a.run.app/";
+    //var apiServer = "http://localhost:8080";
+    var apiServer = "https://comp5521-api-mwzw3w4lvq-uc.a.run.app/";
     function getResult(result){
       if (result === "Y"){
         deposit($("#amount").val(),userId);

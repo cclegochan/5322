@@ -27,8 +27,8 @@
     <script src="https://cdn.staticfile.org/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 
     <script>
-        var apiServer = "http://localhost:8080";
-        //var apiServer = "https://comp5521-api-mwzw3w4lvq-uc.a.run.app/";
+        //var apiServer = "http://localhost:8080";
+        var apiServer = "https://comp5521-api-mwzw3w4lvq-uc.a.run.app/";
 
         const userId = $.cookie('userId');
         const userName = $.cookie('name');
@@ -172,7 +172,16 @@
                             _row += "<td>" + element.from + "</td>"
                             _row += "<td>" + element.to + "</td>"
                             _row += "<td>" + element.created_at + "</td>"
-                            _row += "<td colspan='2' style='word-wrap: break-word'>" + element.tx_id + "</td>"
+                            if (element.crypto_type === "BTC-USD") {
+                                _row += "<td colspan='2' style='word-wrap: break-word'><a target='_blank' href='https://blockchair.com/bitcoin/testnet/transaction/"+element.tx_id+"'>" + element.tx_id + "</a></td>"
+
+                            } else if (element.crypto_type === "DOGE-USD") {
+                                _row += "<td colspan='2' style='word-wrap: break-word'><a target='_blank' href='https://sochain.com/tx/DOGE/"+element.tx_id+"'>" + element.tx_id + "</a></td>"
+
+                            } else {
+                                _row += "<td colspan='2' style='word-wrap: break-word'>" + element.tx_id + "/td>"
+
+                            }
 
 
 
