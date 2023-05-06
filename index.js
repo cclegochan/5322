@@ -6,6 +6,9 @@ const bodyParser = require('body-parser');
 const connection = require('./database');
 const e = require('express');
 
+const userJs = require('./user');
+const getBtcAddress = require("./btc");
+
 
 // create application/json parser
 var jsonParser = bodyParser.json()
@@ -34,18 +37,154 @@ app.use(function (req, res, next) {
 });
 
 app.get('/', (req, res) => res.send('Success.'));
-app.route('/user/:id')
-  .get((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
 
+/**** User Section ***/
+app.post('/login', jsonParser, function (req, res, next) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+
+        var _login_name = req.body.loginname;
+        var _password = req.body.password;
+
+        connection.query(
+            "SELECT id,name FROM `user` WHERE login_name = ? and login_password = ?",
+                [_login_name,_password],
+            (error, results, fields) => {
+                if (error) throw error;
+                res.json(results);
+            }
+        );
+    });
+app.route('/user/:id')
+    .get((req, res, next) => {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+
+        connection.query(
+            "SELECT * FROM `user` WHERE id = ?", req.params.id,
+            (error, results, fields) => {
+                if (error) throw error;
+                res.json(results);
+            }
+        );
+    });
+app.route('/user_wallet/:id')
+    .get((req, res, next) => {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+
+        connection.query(
+            "SELECT * FROM `user_wallet` WHERE user_id = ?", req.params.id,
+            (error, results, fields) => {
+                if (error) throw error;
+                res.json(results);
+            }
+        );
+    });
+app.post('/create_user', jsonParser, function (req, res, next) {
+    console.log("enter create_user");
+    console.log(req.params);
+    console.log(req.body);
+
+    var _name = req.body.name;
+    var _hkid = req.body.hkid;
+    var _addr = req.body.addr;
+    var _login_name = req.body.loginname;
+    var _password = req.body.password;
+
+
+    connection.query("insert into crypto_exchange.user set ?",
+        {
+            name: _name,
+            addr: _addr,
+            hkid: _hkid,
+            login_name: _login_name,
+            login_password: _password
+        }
+        , function (err, fields) {
+            if (err)
+                throw err;
+        });
+ /*   connection.query('SELECT * FROM `user` WHERE login_name = ? and login_password = ?', _login_name, _password
+        (error, results, fields) => {
+            if (error) throw error;
+            res.json(results);
+        }
+    );*/
+
+    res.json("OK");
+
+});
+
+app.post('/deposit', jsonParser, function (req, res, next) {
+    console.log("enter deposit");
+    console.log(req.params);
+    console.log(req.body);
+
+    var amount = req.body.amount;
+    var userId = req.body.userId;
+
+
+    var result = userJs(amount,userId);
+
+    res.json(result);
+
+});
+
+
+
+/**** End User Section ***/
+
+
+/**** Order Section ***/
+app.get('/order', (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    //var btcAddr = getBtcAddress();
+    console.log("btcAddress: "+btcAddr);
     connection.query(
-      "SELECT * FROM `user` WHERE id = ?", req.params.id,
-      (error, results, fields) => {
-        if (error) throw error;
-        res.json(results);
-      }
+        "SELECT *  FROM `order_book` order by  created_at desc ",
+        (error, results, fields) => {
+            if (error) throw error;
+            res.json(results);
+        }
     );
 });
+app.post('/order/create', jsonParser, function (req, res, next) {
+    console.log("enter order/create");
+    console.log(req.params);
+    console.log(req.body);
+
+
+    var crypto_type = req.body.crypto_type;
+    var category = req.body.category;
+    var volume = req.body.volume;
+    var price = req.body.price;
+    var from = req.body.from;
+
+
+    connection.query("insert into crypto_exchange.order_book set ?",
+        {
+            crypto_type: crypto_type,
+            category: category,
+            volume: volume,
+            price: price,
+            from: from
+        }
+        , function (err, fields) {
+            if (err)
+                throw err;
+        });
+    /*   connection.query('SELECT * FROM `user` WHERE login_name = ? and login_password = ?', _login_name, _password
+           (error, results, fields) => {
+               if (error) throw error;
+               res.json(results);
+           }
+       );*/
+
+    res.json("OK");
+
+});
+
+
+/**** End Order Section ***/
+
 
 
 app.get('/class_section', (req, res) => {

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="google-site-verification" content="0TP-WoToywK2pXW7uTmJpf8wQf8TMgzk0PCCXOR1Fh4"/>
+
+    <title>21001556G Bitcoin & Dogecoin Exchange Platform</title>
+
+
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="img/legochanpro_white.png">
+
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet"
+          type="text/css">
+
+    <link href="css/lego_css.min.css" rel="stylesheet" type="text/css">
+    <link href="vendor/magnific-popup/magnific-popup.css" rel="stylesheet" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
+    <script src="https://cdn.staticfile.org/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+    <script>
+        var apiServer = "http://localhost:8080";
+        //var apiServer = "https://comp5521-api-mwzw3w4lvq-uc.a.run.app/";
+
+        const userId = $.cookie('userId');
+        const userName = $.cookie('name');
+        rate_bitcoin = 0;
+        rate_doge = 0;
+        $(document).ready(function () {
+            $("#volume").keyup(function(){
+                var volume =$("#volume").val();
+                var type = $('#crypto_type').val();
+                if(type==="BTC-USD"){
+                    $('#price').val(rate_bitcoin*volume);
+                }else if(type==="DOGE-USD"){
+                    $('#price').val(rate_doge*volume);
+                }
+               // alert(volume);alert(type);
+            });
+            $("#crypto_type").change(function(){
+                var type = $('#crypto_type').val();
+                if(type==="BTC-USD"){
+                    $('#refRate').html(rate_bitcoin);
+                }else if(type==="DOGE-USD"){
+                    $('#refRate').html(rate_doge);
+                }
+                // alert(volume);alert(type);
+            });
+
+            $('#userId').html(userName);
+            getData();
+            $("#search").keyup(function () {
+
+                var searchTerm = $("#search").val();
+                var listItem = $('#class_table').children('tr');
+
+                listItem.each(function (e) {
+                    if ($(this).html().indexOf(searchTerm) < 0) {
+                        console.log("no");
+                        $(this).attr('style', 'display:none');
+                    } else {
+                        $(this).attr('style', 'display:');
+                        console.log("yes");
+                    }
+                });
+            });
+        });
+        var getRate =
+            $.ajax({
+                url:  "https://api.blockchain.com/v3/exchange/tickers\n",
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json',
+                //secure: true,
+                // beforeSend: function (xhr) {
+                //   xhr.setRequestHeader ("Access-Control-Allow-Origin","*");
+                // },
+                success: function (data) {
+                    data.forEach(element => {
+                        if(element.symbol === "BTC-USD"){
+                            rate_bitcoin = element.last_trade_price;
+                        }
+                        if(element.symbol === "DOGE-USD"){
+                            rate_doge = element.last_trade_price;
+                        }
+                    });
+
+                }});
+
+        function getData() {
+            getRate.done(function(){
+                $.ajax({
+                    url: apiServer + "/user/"+ userId,
+                    type: 'GET',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    //secure: true,
+                    // beforeSend: function (xhr) {
+                    //   xhr.setRequestHeader ("Access-Control-Allow-Origin","*");
+                    // },
+                    success: function (data) {
+                        var _result = "";
+                        data.forEach(element => {
+                            $('#name').html(element.name);
+                            $('#addr').html(element.addr);
+                            $('#hkid').html(element.hkid);
+                            $('#login_name').html(element.login_name);
+                            $('#password').html(element.login_password);
+
+                        });
+
+                    }
+                });
+                $.ajax({
+                    url: apiServer + "/user_wallet/"+ userId,
+                    type: 'GET',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    //secure: true,
+                    // beforeSend: function (xhr) {
+                    //   xhr.setRequestHeader ("Access-Control-Allow-Origin","*");
+                    // },
+                    success: function (data) {
+                        var _result = "";
+                        data.forEach(element => {
+                            $('#usd_amount').html(element.fiat_amount);
+
+                            $('#paypal_addr').html(element.paypal_id);
+
+                            $('#paypal_pk').html(element.paypal_pk);
+                            $('#btc_amount').html('0');
+                            $('#btc_addr').html(element.bitcoin_addr);
+                            $('#btc_pk').html(element.bitcoin_pk);
+                            $('#doge_amount').html('0');
+                            $('#doge_addr').html(element.dogecoin_addr);
+                            $('#doge_pk').html(element.dogecoin_pk);
+
+                        });
+
+                    }
+                });
+            });
+
+        }
+
+        function submitAction() {
+
+            $.ajax({
+                url: apiServer + "/order/create",
+                data: //$('#enrolForm').serialize()
+                    JSON.stringify(
+                        {
+                            crypto_type: $('#crypto_type').val(),
+                            category: $('#action_type').val(),
+                            volume: $('#volume').val(),
+                            price: $('#price').val(),
+                            from: userId,
+                        })
+                ,
+                method: "POST",
+                dataType: "JSON",
+                contentType: "application/json;charset=utf-8",
+                success: function (returnData) {
+                    console.log(returnData);
+                    $('#enrolForm').modal('hide');
+                    getData();
+
+                    //result($('#enrol_section_id').val());
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.status);
+                    console.log(thrownError);
+                }
+            });
+
+
+        }
+
+        function deleteEnrolment(section_id, id) {
+
+            $.ajax({
+                url: apiServer + "/deleteEnrolment",
+                data: //$('#enrolForm').serialize()
+                    JSON.stringify(
+                        {
+                            form_id: id,
+
+                        })
+                ,
+                method: "POST",
+                dataType: "JSON",
+                contentType: "application/json;charset=utf-8",
+                success: function (returnData) {
+                    console.log(returnData);
+                    result(section_id);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.status);
+                    console.log(thrownError);
+                }
+            });
+
+
+        }
+
+        function paypal() {
+           window.location.href="paypal.html";
+        }
+
+        function result(section_id) {
+
+            $('#result_table').html();
+            $.ajax({
+                url: apiServer + "/section/result/" + section_id,
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json',
+                //secure: true,
+                // beforeSend: function (xhr) {
+                //   xhr.setRequestHeader ("Access-Control-Allow-Origin","*");
+                // },
+                success: function (data) {
+                    var _result = "";
+                    $('#result_name').html("No Participant");
+
+                    $('#result_count').html("");
+
+                    data.forEach(element => {
+                        var _row = "<tr>";
+                        _row += "<td>" + element.form_id + "</td>";
+                        _row += "<td>" + element.name + "</td>"
+                        _row += "<td>" + element.phone + "</td>"
+                        _row += "<td>" + element.email + "</td>"
+                        _row += "<td><button type='button' class='btn btn-danger' onclick='deleteEnrolment(" + section_id + "," + element.form_id + ")'>Delete</button></td>"
+
+                        _row += "</tr>"
+                        _result += _row;
+                        $('#result_name').html(element.class_name);
+                        $('#result_count').html("Available Space:" + data.length + " (Max:" + element.limit + ")");
+
+                    });
+
+                    $('#result_table').html(_result);
+                }
+            });
+            $('#enrolForm').modal('hide');
+            window.location.href = "#result_table";
+
+        }
+
+    </script>
+
+</head>
+
+<body id="page-top" style="background-color:#FFFFFF;">
+
+<div style="background-color:#FFFFFF;width:100%;position:fixed; bottom:20%;z-index:-1;opacity:0.1">
+    <img src='https://www.polyu.edu.hk/assets/img/main-logo-3x.png' width='100%'/>
+    5322 Fall 2022 21001556g
+</div>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg bg-secondary fixed-top text-uppercase" id="mainNav">
+    <div class="container">
+        <h2>User Profile</h2>
+        <!-- <a class="navbar-brand js-scroll-trigger" href="#page-top"><img height="50px" src="img/legochanpro_white_long.png"/></a> -->
+
+        <div class="" >
+            Hello <span style="color:white" id="userId"></span> !<br/><br/>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger btn-block" href="5521_index.html">Back</a>
+                </li>
+
+
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#wallet">Wallet</a>
+                </li>
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#about">My Personal Information</a>
+                </li>
+
+            </ul>
+
+        </div>
+    </div>
+</nav>
+<!-- About Section -->
+<section class=" text-dark mb-0" id="wallet" style="margin-top:150px">
+    <div class="container">
+
+        <h2 class="text-center text-uppercase text-dark">Wallet</h2>
+        <hr class="star-dark mb-5">
+
+        <div>
+            <div class="form-group row">
+                <label for="" class="col-sm-2 col-form-label"><b>USD Amount</b></label>
+                <div class="col-sm-10">
+                    <span id="usd_amount">0</span>
+                    &nbsp;
+                    <button class="btn btn-success" onclick='window.location.href="paypal.html";'>Deposit</button>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="" class="col-sm-2 col-form-label"><b>Paypal Address</b></label>
+                <div class="col-sm-10">
+                    <span id="paypal_addr"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="" class="col-sm-2 col-form-label"><b>Paypal Private Key</b></label>
+                <div class="col-sm-10">
+                    <span id="paypal_pk"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="" class="col-sm-2 col-form-label"><b>Bitcoin Amount</b></label>
+                <div class="col-sm-10">
+                    <span id="btc_amount"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="" class="col-sm-2 col-form-label"><b>Bitcoin Address</b></label>
+                <div class="col-sm-10">
+                    <span id="btc_addr"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="" class="col-sm-2 col-form-label"><b>Bitcoin Private Key</b></label>
+                <div class="col-sm-10">
+                    <span id="btc_pk"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="" class="col-sm-2 col-form-label"><b>Dogecoin Amount</b></label>
+                <div class="col-sm-10">
+                    <span id="doge_amount"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="" class="col-sm-2 col-form-label"><b>Dogecoin Address</b></label>
+                <div class="col-sm-10">
+                    <span id="doge_addr"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="" class="col-sm-2 col-form-label"><b>Dogecoin Private Key</b></label>
+                <div class="col-sm-10">
+                    <span id="doge_pk"></span>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</section>
+
+
+<!-- Result Section -->
+<section class="bg-primary text-white mb-0" id="about" style="margin-top:10px">
+    <div class="container">
+        <h2 class="text-center text-uppercase text-white" id="">Personal Info & Verification</h2>
+        <hr class="star-light mb-5">
+        <h2 class="text-center text-uppercase text-white" id="result_name"></h2>
+            <h3 class="text-center text-uppercase text-white" id="result_count"></h3>
+                <hr class="star-light mb-5" id='hasResult' style="display:none">
+        <form>
+            <div class="form-group row">
+                <label for="" class="col-sm-2 col-form-label"><b>Full Name</b></label>
+                <div class="col-sm-10">
+                    <span id="name"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="" class="col-sm-2 col-form-label"><b>Address</b></label>
+                <div class="col-sm-10">
+                    <span id="addr"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="" class="col-sm-2 col-form-label"><b>HKID</b></label>
+                <div class="col-sm-10">
+                    <span id="hkid"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="" class="col-sm-2 col-form-label"><b>Login Name</b></label>
+                <div class="col-sm-10">
+                    <span id="login_name"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="" class="col-sm-2 col-form-label"><b>Password</b></label>
+                <div class="col-sm-10">
+                    <div id="password"></div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="" class="col-sm-2 col-form-label"><b>Proof of Identities</b></label>
+                <div class="col-sm-10">
+                    <img src="https://qph.cf2.quoracdn.net/main-qimg-7259bb97838f0c7d602dce6ddfbd4fa2-lq">
+                </div>
+            </div>
+
+
+
+        </form>
+    </div>
+</section>
+
+<div class="modal fade" id="paypal_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold" id="modalTitle">E </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <!-- <form id="enrolForm"> -->
+            <div class="modal-body mx-3">
+
+
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button class="btn btn-success" onclick="submitAction();">Place Order</button>
+            </div>
+            <!-- </form> -->
+        </div>
+    </div>
+</div>
+
+
+<div class="scroll-to-top d-lg-none position-fixed ">
+    <a class="js-scroll-trigger d-block text-center text-white rounded" href="#page-top">
+        <i class="fa fa-chevron-up"></i>
+    </a>
+</div>
+
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Plugin JavaScript -->
+<script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+<script src="vendor/magnific-popup/jquery.magnific-popup.min.js"></script>
+
+<!-- Contact Form JavaScript -->
+<script src="js/jqBootstrapValidation.js"></script>
+<script src="js/contact_me.js"></script>
+<script src="js/lego_js.min.js"></script>
+
+</body>
+
+</html>

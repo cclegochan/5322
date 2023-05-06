@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
+  <script src="https://cdn.staticfile.org/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+  <title>PayPal</title>
+
+</head>
+<body>
+<script data-sdk-integration-source="integrationbuilder_ac"></script>
+<div>
+<label><b>Deposit Amount (USD):</b></label>
+<input type="text" placeholder="Enter Amount" id="amount" value="100" required>
+</div>
+<div>
+  <label><b>Amount (User Id):</b></label>
+  <span id="userId"></span>
+</div>
+<div id="paypal-button-container"></div>
+<script src="https://www.paypal.com/sdk/js?client-id=AXWRvbPE_FG6gJV9ayedZ5e1kOJtF2qLXc5b3YQ5-zWoNA-sTU7POQ2fSSDo5R0Vk4WbZ9RvyJlQL7xV"></script>
+<script>
+  const fundingSources = [
+    paypal.FUNDING.PAYPAL,
+    paypal.FUNDING.CARD
+  ];
+
+  for (const fundingSource of fundingSources) {
+
+    paypal
+            .Buttons({
+              fundingSource,
+
+              style: {
+                layout: 'vertical',
+                shape: 'rect'
+              },
+
+              createOrder: function (data, actions) {
+                const createOrderPayload = {
+                  purchase_units: [
+                    {
+                      amount: {
+                        value:  $("#amount").val(),
+                      },
+                    },
+                  ],
+                };
+
+                return actions.order.create(createOrderPayload);
+              },
+
+              onApprove: function (data, actions) {
+
+              },
+            })
+            .render("#paypal-button-container");
+  }
+
+</script>
+<div>
+  <label><b>Testing Purpose</b></label>
+  <button class="btn btn-success" onclick="getResult('Y')">Done</button>
+  <button class="btn btn-danger" onclick="getResult('N')">No</button>
+  <script>
+    userId = $.cookie('userId');
+    var apiServer = "http://localhost:8080";
+    //var apiServer = "https://comp5521-api-mwzw3w4lvq-uc.a.run.app/";
+    function getResult(result){
+      if (result === "Y"){
+        deposit($("#amount").val(),userId);
+      }else{
+        alert("Failed to deposit");
+      }
+    }
+
+    function deposit(amount,userId){
+      $.ajax({
+        url: apiServer + "/deposit",
+        data: //$('#enrolForm').serialize()
+                JSON.stringify(
+                        {
+                          amount: amount,
+                          userId: userId,
+                        })
+        ,
+        method: "POST",
+        dataType: "JSON",
+        contentType: "application/json;charset=utf-8",
+        success: function (returnData) {
+          console.log(returnData);
+          window.location.href="user_profile.html";
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          console.log(xhr.status);
+          console.log(thrownError);
+        }
+      });
+
+    }
+    $(document).ready(function () {
+      $("#userId").html(userId);
+      var _amount = getUrlParameter('amount');
+      if(_amount){
+        $('#amount').val(_amount);
+      }
+
+
+    });
+    var getUrlParameter = function getUrlParameter(sParam) {
+      var sPageURL = window.location.search.substring(1),
+              sURLVariables = sPageURL.split('&'),
+              sParameterName,
+              i;
+
+      for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+          return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+      }
+      return false;
+    };
+  </script>
+</div>
+</body>
+</html>

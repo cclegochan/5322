@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
+    <script src="https://cdn.staticfile.org/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link href="css/lego_css.min.css" rel="stylesheet" type="text/css">
+    <style>
+        body {font-family: Arial, Helvetica, sans-serif;}
+        form {border: 3px solid #f1f1f1;}
+
+        input[type=text], input[type=password] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #04AA6D;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .cancelbtn {
+            width: auto;
+            padding: 10px 18px;
+            background-color: #f44336;
+        }
+
+        .imgcontainer {
+            text-align: center;
+            margin: 24px 0 12px 0;
+        }
+
+        img.avatar {
+            width: 40%;
+            border-radius: 50%;
+        }
+
+        .container {
+            padding: 16px;
+        }
+
+        span.psw {
+            float: right;
+            padding-top: 16px;
+        }
+
+        /* Change styles for span and cancel button on extra small screens */
+        @media screen and (max-width: 300px) {
+            span.psw {
+                display: block;
+                float: none;
+            }
+            .cancelbtn {
+                width: 100%;
+            }
+        }
+    </style>
+    <script>
+        var apiServer = "http://localhost:8080";
+        //var apiServer = "https://comp5521-api-mwzw3w4lvq-uc.a.run.app/";
+        function login(){
+
+            $.ajax({
+                url: apiServer + "/login",
+                data: //$('#enrolForm').serialize()
+                    JSON.stringify(
+                        {
+                            loginname: $('#uname').val(),
+                            password: $('#password').val()
+
+                        })
+                ,
+                method: "POST",
+                dataType: "JSON",
+                contentType: "application/json;charset=utf-8",
+                success: function(returnData){
+                    console.log(returnData);
+                    $.cookie('userId', returnData[0].id);
+                    $.cookie('name', returnData[0].name);
+                    window.location.href = '5521_index.html';
+                },
+                error: function(xhr, ajaxOptions, thrownError){
+                    console.log(xhr.status);
+                    console.log(thrownError);
+                }
+            });
+
+
+
+        }
+        function register(){
+
+            $.ajax({
+                url: apiServer + "/create_user",
+                data: //$('#enrolForm').serialize()
+                    JSON.stringify(
+                        {
+                            name: $('#reg_name').val(),
+                            addr: $('#reg_addr').val(),
+                            hkid: $('#reg_hkid').val(),
+                            loginname: $('#reg_login_name').val(),
+                            password: $('#reg_password').val()
+
+
+                        })
+                ,
+                method: "POST",
+                dataType: "JSON",
+                contentType: "application/json;charset=utf-8",
+                success: function(returnData){
+                    console.log(returnData);
+                    if (returnData ==="OK"){
+                        alert("Created, please login");
+                    }
+                   // $.cookie('userId', returnData[0].id);
+                    //window.location.href = '5521_index.html';
+                },
+                error: function(xhr, ajaxOptions, thrownError){
+                    console.log(xhr.status);
+                    console.log(thrownError);
+                }
+            });
+
+
+
+        }
+    </script>
+</head>
+<body>
+<div style="background-color:#FFFFFF;width:100%;position:fixed; bottom:20%;z-index:-1;opacity:0.1">
+    <img src='https://www.polyu.edu.hk/assets/img/main-logo-3x.png' width='100%'/>
+    <h2>21001556G Bitcoin & Dogecoin Exchange Platform</h2>
+</div>
+<h2>21001556G Bitcoin & Dogecoin Exchange Platform</h2>
+
+
+
+    <div class="container">
+        <h3>Login Form</h3>
+        <label for="uname"><b>Username</b></label>
+        <input type="text" placeholder="Enter Username" id="uname" name="uname" required>
+
+        <label for="psw"><b>Password</b></label>
+        <input type="password" placeholder="Enter Password" id="password" name="psw" required>
+
+        <button type="submit" onclick="login()">Login</button>
+
+    </div>
+
+    <div class="container" style="background-color:rgba(26,15,15,0.6);" >
+
+    </div>
+<div class="container">
+    <h3 style="color:darkslateblue">Registration Form</h3>
+    <label><b>Login Name</b></label>
+    <input type="text" placeholder="Enter Username" id="reg_login_name" required>
+
+    <label><b>Password</b></label>
+    <input type="password" placeholder="Enter Password" id="reg_password"  required>
+
+    <label><b>Full Name</b></label>
+    <input type="text" placeholder="Enter Full Name" id="reg_name"  required>
+
+    <label><b>HKID</b></label>
+    <input type="text" placeholder="Enter HKID" id="reg_hkid"  required>
+
+    <label><b>Address</b></label>
+    <input type="text" placeholder="Enter Address" id="reg_addr"  required>
+
+    <button type="submit" class="btn btn-primary" onclick="register()">Register</button>
+
+</div>
+
+
+</body>
+</html>
