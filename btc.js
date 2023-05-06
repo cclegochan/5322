@@ -75,6 +75,7 @@ async function getNewAddrs(userId) {
         var result = createWallet(userId,btcData.data.address,dogeData.data.address);
         console.log(result);
     } catch (err) {
+        var result = createWallet(userId,"2MsbHviSNUD7jXL1nZHuSRU5QN6Rp3Sq2gu","2NDAzkVutMTDmRYPx2y3Kp8p16wUbsusVfK");
         console.log(err);
     }
 }
