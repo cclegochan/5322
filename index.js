@@ -8,6 +8,8 @@ const e = require('express');
 
 const userJs = require('./user');
 const getBtcAddress = require("./btc");
+const getAddrs = require("./btc");
+const {getNewAddrs, getBalance} = require("./btc");
 
 
 // create application/json parser
@@ -50,6 +52,7 @@ app.post('/login', jsonParser, function (req, res, next) {
                 [_login_name,_password],
             (error, results, fields) => {
                 if (error) throw error;
+
                 res.json(results);
             }
         );
@@ -62,9 +65,13 @@ app.route('/user/:id')
             "SELECT * FROM `user` WHERE id = ?", req.params.id,
             (error, results, fields) => {
                 if (error) throw error;
+
+
+                //console.log(addrs);
                 res.json(results);
             }
         );
+
     });
 app.route('/user_wallet/:id')
     .get((req, res, next) => {
@@ -72,8 +79,12 @@ app.route('/user_wallet/:id')
 
         connection.query(
             "SELECT * FROM `user_wallet` WHERE user_id = ?", req.params.id,
-            (error, results, fields) => {
+            async (error, results, fields) => {
                 if (error) throw error;
+
+                let tmp = await getBalance(req.params.id, results[0].bitcoin_addr, results[0].dogecoin_addr);
+                results[0] = Object.assign(results[0], tmp);
+                console.log(results);
                 res.json(results);
             }
         );
@@ -102,12 +113,16 @@ app.post('/create_user', jsonParser, function (req, res, next) {
             if (err)
                 throw err;
         });
- /*   connection.query('SELECT * FROM `user` WHERE login_name = ? and login_password = ?', _login_name, _password
+    connection.query(
+        "SELECT id FROM `user` WHERE login_name = ? and login_password = ?",
+        [_login_name,_password],
         (error, results, fields) => {
             if (error) throw error;
-            res.json(results);
+            var addrs = getNewAddrs(results[0].id);
+            //res.json(results);
         }
-    );*/
+    );
+
 
     res.json("OK");
 
@@ -122,7 +137,7 @@ app.post('/deposit', jsonParser, function (req, res, next) {
     var userId = req.body.userId;
 
 
-    var result = userJs(amount,userId);
+    var result = userJs.deposit(amount,userId);
 
     res.json(result);
 
@@ -137,7 +152,7 @@ app.post('/deposit', jsonParser, function (req, res, next) {
 app.get('/order', (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     //var btcAddr = getBtcAddress();
-    console.log("btcAddress: "+btcAddr);
+
     connection.query(
         "SELECT *  FROM `order_book` order by  created_at desc ",
         (error, results, fields) => {
@@ -146,6 +161,20 @@ app.get('/order', (req, res) => {
         }
     );
 });
+
+app.get('/order/:id', (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    //var btcAddr = getBtcAddress();
+
+    connection.query(
+        "SELECT *  FROM `order_book` where id = ?",req.params.id,
+        (error, results, fields) => {
+            if (error) throw error;
+            res.json(results);
+        }
+    );
+});
+
 app.post('/order/create', jsonParser, function (req, res, next) {
     console.log("enter order/create");
     console.log(req.params);
@@ -180,6 +209,60 @@ app.post('/order/create', jsonParser, function (req, res, next) {
 
     res.json("OK");
 
+});
+
+app.post('/order/action', jsonParser, function (req, res, next) {
+    console.log("enter order/action");
+    console.log(req.params);
+    console.log(req.body);
+
+    var crypto_type = req.body.crypto_type;
+    var orderId = req.body.orderId;
+    var category = req.body.category;
+    var volume = req.body.volume;
+    var tx_fee =  req.body.tx_fee;
+    var price = req.body.price;
+    var tx_id = "";
+    var to = req.body.to;
+    var from = req.body.from;
+
+
+    connection.query("insert into crypto_exchange.trade set ? ",
+        {
+            crypto_type: crypto_type,
+            category: category,
+            volume: volume,
+            price: price,
+            from: from,
+            to: to,
+            tx_id:tx_id,
+            tx_fee: tx_fee
+        }
+        , function (err, fields) {
+            if (err)
+                throw err;
+        });
+    /*   connection.query('SELECT * FROM `user` WHERE login_name = ? and login_password = ?', _login_name, _password
+           (error, results, fields) => {
+               if (error) throw error;
+               res.json(results);
+           }
+       );*/
+
+    res.json("OK");
+
+});
+app.get('/trade', (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    //var btcAddr = getBtcAddress();
+
+    connection.query(
+        "SELECT *  FROM `trade` order by  created_at desc ",
+        (error, results, fields) => {
+            if (error) throw error;
+            res.json(results);
+        }
+    );
 });
 
 

@@ -132,15 +132,16 @@
                         var _result = "";
                         data.forEach(element => {
                             $('#usd_amount').html(element.fiat_amount);
-
+                            $('#pin').html(element.pin);
                             $('#paypal_addr').html(element.paypal_id);
-
                             $('#paypal_pk').html(element.paypal_pk);
-                            $('#btc_amount').html('0');
+                            $('#btc_amount').html(element.btcBalance);
                             $('#btc_addr').html(element.bitcoin_addr);
+                            $('#btc_public_key').html(element.bitcoin_public_key);
                             $('#btc_pk').html(element.bitcoin_pk);
-                            $('#doge_amount').html('0');
+                            $('#doge_amount').html(element.dogeBalance);
                             $('#doge_addr').html(element.dogecoin_addr);
+                            $('#doge_public_key').html(element.doge_public_key);
                             $('#doge_pk').html(element.dogecoin_pk);
 
                         });
@@ -301,10 +302,16 @@
 
         <div>
             <div class="form-group row">
-                <label for="" class="col-sm-2 col-form-label"><b>USD Amount</b></label>
+                <label for="" class="col-sm-2 col-form-label"><b>!! PIN !!</b></label>
                 <div class="col-sm-10">
-                    <span id="usd_amount">0</span>
-                    &nbsp;
+                    <span id="pin"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="" class="col-sm-2 col-form-label" ><b>USD Amount</b></label>
+                <div class="col-sm-10">
+                    <span id="usd_amount" style="color:red">0</span>
+                    &nbsp;&nbsp;
                     <button class="btn btn-success" onclick='window.location.href="paypal.html";'>Deposit</button>
                 </div>
             </div>
@@ -317,43 +324,62 @@
             <div class="form-group row">
                 <label for="" class="col-sm-2 col-form-label"><b>Paypal Private Key</b></label>
                 <div class="col-sm-10">
-                    <span id="paypal_pk"></span>
+                    <span id="paypal_pk"></span> &nbsp;&nbsp;
+                    <button class="btn btn-primary">Edit</button>
                 </div>
             </div>
             <div class="form-group row">
                 <label for="" class="col-sm-2 col-form-label"><b>Bitcoin Amount</b></label>
                 <div class="col-sm-10">
-                    <span id="btc_amount"></span>
+                    <span id="btc_amount" style="color:red"></span>
                 </div>
             </div>
             <div class="form-group row">
                 <label for="" class="col-sm-2 col-form-label"><b>Bitcoin Address</b></label>
                 <div class="col-sm-10">
-                    <span id="btc_addr"></span>
+                    <span id="btc_addr"></span>&nbsp;&nbsp;
+                    <button class="btn btn-primary">Edit</button>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="" class="col-sm-2 col-form-label"><b>Bitcoin Public Key</b></label>
+                <div class="col-sm-10">
+                    <span id="btc_public_key"></span>&nbsp;&nbsp;
+                    <button class="btn btn-primary">Edit</button>
                 </div>
             </div>
             <div class="form-group row">
                 <label for="" class="col-sm-2 col-form-label"><b>Bitcoin Private Key</b></label>
                 <div class="col-sm-10">
-                    <span id="btc_pk"></span>
+                    <span id="btc_pk"></span>&nbsp;&nbsp;
+                    <button class="btn btn-primary">Edit</button>
                 </div>
             </div>
             <div class="form-group row">
                 <label for="" class="col-sm-2 col-form-label"><b>Dogecoin Amount</b></label>
                 <div class="col-sm-10">
-                    <span id="doge_amount"></span>
+                    <span id="doge_amount" style="color:red"></span>
                 </div>
             </div>
             <div class="form-group row">
                 <label for="" class="col-sm-2 col-form-label"><b>Dogecoin Address</b></label>
                 <div class="col-sm-10">
-                    <span id="doge_addr"></span>
+                    <span id="doge_addr"></span>&nbsp;&nbsp;
+                    <button class="btn btn-primary">Edit</button>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="" class="col-sm-2 col-form-label"><b>Dogecoin Public Key</b></label>
+                <div class="col-sm-10">
+                    <span id="doge_public_key"></span>&nbsp;&nbsp;
+                    <button class="btn btn-primary">Edit</button>
                 </div>
             </div>
             <div class="form-group row">
                 <label for="" class="col-sm-2 col-form-label"><b>Dogecoin Private Key</b></label>
                 <div class="col-sm-10">
-                    <span id="doge_pk"></span>
+                    <span id="doge_pk"></span>&nbsp;&nbsp;
+                    <button class="btn btn-primary">Edit</button>
                 </div>
             </div>
 

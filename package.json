@@ -11,6 +11,7 @@
   "dependencies": {
     "bip32": "^4.0.0",
     "bitcoinjs-lib": "^6.1.0",
+    "block_io": "^4.2.1",
     "body-parser": "^1.20.1",
     "browserify": "^17.0.0",
     "dotenv": "^16.0.3",
@@ -19,5 +20,4 @@
     "mysql": "^2.18.1",
     "tiny-secp256k1": "^2.2.1"
   }
-
 }

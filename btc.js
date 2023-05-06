@@ -6,6 +6,12 @@ const https = require("https");
 // all the methods of the `TinySecp256k1Interface` interface.
 const ECPair = ECPairFactory(tinysecp);
 
+const pin = 'EGy27HU_z8BKjQgUKb_Ot78jb3k54aRb3UI80Ebuxu42UGt1Gt7j3EhMXNnV8wBctbCQicLwMJIFW-ef';
+const BlockIo = require('block_io');
+const {createWallet} = require("./user");
+const block_io_btc_testnet = new BlockIo('99d3-3690-863c-da92',pin);
+const block_io_doge_testnet = new BlockIo('bfb7-bef7-80b0-5a8e',pin);
+
  function getBtcAddress() {
     try {
 
@@ -50,4 +56,45 @@ const ECPair = ECPairFactory(tinysecp);
 
 
 }
-module.exports = getBtcAddress;
+
+async function getNewAddrs(userId) {
+    let btcData;
+    let dogeData;
+
+    /*data = await block_io_btc_testnet.get_balance();
+    console.log(JSON.stringify(data, null, 2));
+*/
+    // create a new address
+    try {
+        btcData = await block_io_btc_testnet.get_new_address({label:  Math.random()+'_user_'+ userId});
+        console.log(JSON.stringify(btcData, null, 2));
+        dogeData= await block_io_doge_testnet.get_new_address({label:  Math.random()+'_user_'+ userId});
+        console.log(JSON.stringify(dogeData, null, 2));
+        //console.log(btcData);
+        //console.log(dogeData.address);
+        var result = createWallet(userId,btcData.data.address,dogeData.data.address);
+        console.log(result);
+    } catch (err) {
+        console.log(err);
+    }
+}
+async function getBalance(userId,btcAddr,dogeAddr) {
+    let btcData;
+    let dogeData;
+
+    try {
+        btcData = await block_io_btc_testnet.get_address_balance({address:btcAddr});
+        dogeData = await block_io_doge_testnet.get_address_balance({address:dogeAddr});
+        /*data.forEach(element => {
+            if(element.)
+        });  */
+        console.log(JSON.stringify(btcData, null, 2));
+
+        console.log(JSON.stringify(dogeData, null, 2));
+
+        return {"btcBalance": btcData.data.available_balance , "dogeBalance": dogeData.data.available_balance}
+    } catch (err) {
+        console.log(err);
+    }
+}
+module.exports = {getNewAddrs, getBalance};

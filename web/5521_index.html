@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="google-site-verification" content="0TP-WoToywK2pXW7uTmJpf8wQf8TMgzk0PCCXOR1Fh4"/>
+
+    <title>21001556G Bitcoin & Dogecoin Exchange Platform</title>
+
+
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="img/legochanpro_white.png">
+
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet"
+          type="text/css">
+
+    <link href="css/lego_css.min.css" rel="stylesheet" type="text/css">
+    <link href="vendor/magnific-popup/magnific-popup.css" rel="stylesheet" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
+    <script src="https://cdn.staticfile.org/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
+    <script>
+        var apiServer = "http://localhost:8080";
+        //var apiServer = "https://comp5521-api-mwzw3w4lvq-uc.a.run.app/";
+
+        const userId = $.cookie('userId');
+        const userName = $.cookie('name');
+        rate_bitcoin = 0;
+        rate_doge = 0;
+        $(document).ready(function () {
+            $("#volume").keyup(function(){
+                var volume =$("#volume").val();
+                var type = $('#crypto_type').val();
+                if(type==="BTC-USD"){
+                    $('#price').val(rate_bitcoin*volume);
+                }else if(type==="DOGE-USD"){
+                    $('#price').val(rate_doge*volume);
+                }
+               // alert(volume);alert(type);
+            });
+            $("#crypto_type").change(function(){
+                var type = $('#crypto_type').val();
+                if(type==="BTC-USD"){
+                    $('#refRate').html(rate_bitcoin);
+                }else if(type==="DOGE-USD"){
+                    $('#refRate').html(rate_doge);
+                }
+                // alert(volume);alert(type);
+            });
+
+            $('#userId').html(userName);
+            getData();
+            $("#search").keyup(function () {
+
+                var searchTerm = $("#search").val();
+                var listItem = $('#class_table').children('tr');
+
+                listItem.each(function (e) {
+                    if ($(this).html().indexOf(searchTerm) < 0) {
+                        console.log("no");
+                        $(this).attr('style', 'display:none');
+                    } else {
+                        $(this).attr('style', 'display:');
+                        console.log("yes");
+                    }
+                });
+            });
+        });
+        var getRate =
+            $.ajax({
+                url:  "https://api.blockchain.com/v3/exchange/tickers\n",
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json',
+                //secure: true,
+                // beforeSend: function (xhr) {
+                //   xhr.setRequestHeader ("Access-Control-Allow-Origin","*");
+                // },
+                success: function (data) {
+                    data.forEach(element => {
+                        if(element.symbol === "BTC-USD"){
+                            rate_bitcoin = element.last_trade_price;
+                        }
+                        if(element.symbol === "DOGE-USD"){
+                            rate_doge = element.last_trade_price;
+                        }
+                    });
+
+                }});
+
+        function getData() {
+            getRate.done(function(){
+                $.ajax({
+                    url: apiServer + "/order",
+                    type: 'GET',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    //secure: true,
+                    // beforeSend: function (xhr) {
+                    //   xhr.setRequestHeader ("Access-Control-Allow-Origin","*");
+                    // },
+                    success: function (data) {
+                        var _result = "";
+                        data.forEach(element => {
+                            var _row = "<tr>";
+                            _row += "<td>" + element.id + "</td>";
+                            _row += "<td>" + element.crypto_type + "</td>"
+                            if (element.crypto_type === "BTC-USD") {
+                                _row += "<td>" + rate_bitcoin + "</td>"
+                            } else if (element.crypto_type === "DOGE-USD") {
+                                _row += "<td>" + rate_doge + "</td>"
+                            } else {
+                                _row += "<td>" + "/" + "</td>"
+                            }
+
+                            _row += "<td>" + element.category + "</td>"
+                            _row += "<td>" + element.volume + "</td>"
+                            _row += "<td>" + element.price + "</td>"
+                            _row += "<td>" + element.from + "</td>"
+                            _row += "<td>" + element.created_at + "</td>"
+                            if (element.category === "Buy") {
+                                let cat = element.category;
+                                let _id = element.id;
+                                _row += "<td><button type='button' class='btn btn-danger' onclick='actionByRecord(" + 1 + "," + _id + ")'>Sell</button></td>"
+                            } else {
+                                let _id = element.id;
+                                _row += "<td><button type='button' class='btn btn-success' onclick='actionByRecord(" + 0 + "," + _id + ")'>Buy</button></td>"
+                            }
+
+
+                            _row += "</tr>"
+                            _result += _row;
+                        });
+
+                        $('#order_table').html(_result);
+                    }
+                });
+                $.ajax({
+                    url: apiServer + "/trade",
+                    type: 'GET',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    //secure: true,
+                    // beforeSend: function (xhr) {
+                    //   xhr.setRequestHeader ("Access-Control-Allow-Origin","*");
+                    // },
+                    success: function (data) {
+                        var _result = "";
+                        data.forEach(element => {
+                            var _row = "<tr>";
+                            _row += "<td>" + element.id + "</td>";
+                            _row += "<td>" + element.crypto_type + "</td>"
+                           /* if (element.crypto_type === "BTC-USD") {
+                                _row += "<td>" + rate_bitcoin + "</td>"
+                            } else if (element.crypto_type === "DOGE-USD") {
+                                _row += "<td>" + rate_doge + "</td>"
+                            } else {
+                                _row += "<td>" + "/" + "</td>"
+                            }
+*/
+                            /*_row += "<td>" + element.category + "</td>"*/
+                            _row += "<td>" + element.volume + "</td>"
+                            _row += "<td>" + element.price + "</td>"
+                            _row += "<td>" + element.tx_fee + "</td>"
+                            _row += "<td>" + element.from + "</td>"
+                            _row += "<td>" + element.to + "</td>"
+                            _row += "<td>" + element.created_at + "</td>"
+                            _row += "<td colspan='2' style='word-wrap: break-word'>" + element.tx_id + "</td>"
+
+
+
+                            _row += "</tr>"
+                            _result += _row;
+                        });
+
+                        $('#trade_table').html(_result);
+                    }
+                });
+            });
+
+        }
+        function getOneOrderData(id){
+            $.ajax({
+                url: apiServer + "/order/"+id,
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json',
+                //secure: true,
+                // beforeSend: function (xhr) {
+                //   xhr.setRequestHeader ("Access-Control-Allow-Origin","*");
+                // },
+                success: function (data) {
+                    var _result = "";
+                    data.forEach(element => {
+
+                        $('#action_crypto_type').val(element.crypto_type);
+                        $('#action_volume').val(element.volume);
+                        $('#action_from').val(element.from);
+                        $('#action_price').val(element.price);
+
+                        $('#action_tradingFee').val(Number(element.price)*0.001);
+
+
+                        $('#action_totalFee').val(element.price+Number(element.price)*0.001);
+                        var c_type = element.crypto_type;
+                        if(c_type==="BTC-USD"){
+                            $('#action_refRate').html(rate_bitcoin);
+                        }else if(c_type==="DOGE-USD"){
+                            $('#action_refRate').html(rate_doge);
+                        }
+                    });
+
+                }
+            });
+        }
+        function confirmAction() {
+            var category = $('#action_form_action_type').val();
+            var tx_to = "";
+            var tx_from = "";
+            if(category === "Buy"){
+                tx_from = userId;
+                tx_to = $('#action_from').val();
+            }else{
+                tx_to = userId;
+                tx_from = $('#action_from').val();
+            }
+
+            $.ajax({
+                url: apiServer + "/order/action",
+                data: //$('#enrolForm').serialize()
+                    JSON.stringify(
+                        {
+                            crypto_type: $('#action_crypto_type').val(),
+                            orderId: $('#action_form_order_id').val(),
+                            category: category,
+                            volume: $('#action_volume').val(),
+                            price: $('#action_price').val(),
+                            tx_fee : $('#action_tradingFee').val(),
+                            from: tx_from,
+                            to: tx_to,
+                        })
+                ,
+                method: "POST",
+                dataType: "JSON",
+                contentType: "application/json;charset=utf-8",
+                success: function (returnData) {
+                    console.log(returnData);
+                    $('#actionForm').modal('hide');
+                    getData();
+
+                    //result($('#enrol_section_id').val());
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.status);
+                    console.log(thrownError);
+                }
+            });
+
+
+        }
+
+
+
+        function submitAction() {
+
+            $.ajax({
+                url: apiServer + "/order/create",
+                data: //$('#enrolForm').serialize()
+                    JSON.stringify(
+                        {
+                            crypto_type: $('#crypto_type').val(),
+                            category: $('#action_type').val(),
+                            volume: $('#volume').val(),
+                            price: $('#price').val(),
+                            from: userId,
+                        })
+                ,
+                method: "POST",
+                dataType: "JSON",
+                contentType: "application/json;charset=utf-8",
+                success: function (returnData) {
+                    console.log(returnData);
+                    $('#enrolForm').modal('hide');
+                    getData();
+
+                    //result($('#enrol_section_id').val());
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.status);
+                    console.log(thrownError);
+                }
+            });
+
+
+        }
+
+        function deleteEnrolment(section_id, id) {
+
+            $.ajax({
+                url: apiServer + "/deleteEnrolment",
+                data: //$('#enrolForm').serialize()
+                    JSON.stringify(
+                        {
+                            form_id: id,
+
+                        })
+                ,
+                method: "POST",
+                dataType: "JSON",
+                contentType: "application/json;charset=utf-8",
+                success: function (returnData) {
+                    console.log(returnData);
+                    result(section_id);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.status);
+                    console.log(thrownError);
+                }
+            });
+
+
+        }
+
+        function action(type) {
+            $('#action_type').val(type);
+            $('#modalTitle').html("Action: " + type);
+            $('#refRate').html(rate_bitcoin);
+                        $('#enrolForm').modal('show');
+        }
+        function actionByRecord(type,id) {
+            getOneOrderData(id);
+            $('#action_form_order_id').val(id);
+            if(type===1){
+                $('#action_form_action_type').val("Sell");
+                $('#action_modalTitle').html("Action: Sell , Order ID: " + id);
+            }else{
+
+                $('#action_form_action_type').val("Buy");
+                $('#action_modalTitle').html("Action: Buy , Order ID: " + id);
+            }
+
+            $('#actionForm').modal('show');
+        }
+        function result(section_id) {
+
+            $('#result_table').html();
+            $.ajax({
+                url: apiServer + "/section/result/" + section_id,
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json',
+                //secure: true,
+                // beforeSend: function (xhr) {
+                //   xhr.setRequestHeader ("Access-Control-Allow-Origin","*");
+                // },
+                success: function (data) {
+                    var _result = "";
+                    $('#result_name').html("No Participant");
+
+                    $('#result_count').html("");
+
+                    data.forEach(element => {
+                        var _row = "<tr>";
+                        _row += "<td>" + element.form_id + "</td>";
+                        _row += "<td>" + element.name + "</td>"
+                        _row += "<td>" + element.phone + "</td>"
+                        _row += "<td>" + element.email + "</td>"
+                        _row += "<td><button type='button' class='btn btn-danger' onclick='deleteEnrolment(" + section_id + "," + element.form_id + ")'>Delete</button></td>"
+
+                        _row += "</tr>"
+                        _result += _row;
+                        $('#result_name').html(element.class_name);
+                        $('#result_count').html("Available Space:" + data.length + " (Max:" + element.limit + ")");
+
+                    });
+
+                    $('#result_table').html(_result);
+                }
+            });
+            $('#enrolForm').modal('hide');
+            window.location.href = "#result_table";
+
+        }
+
+    </script>
+</head>
+
+<body id="page-top" style="background-color:#FFFFFF;">
+
+<div style="background-color:#FFFFFF;width:100%;position:fixed; bottom:20%;z-index:-1;opacity:0.1">
+    <img src='https://www.polyu.edu.hk/assets/img/main-logo-3x.png' width='100%'/>
+    5322 Fall 2022 21001556g
+</div>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg bg-secondary fixed-top text-uppercase" id="mainNav">
+    <div class="container">
+        <h2>21001556G Bitcoin & Dogecoin Exchange Platform</h2>
+        <!-- <a class="navbar-brand js-scroll-trigger" href="#page-top"><img height="50px" src="img/legochanpro_white_long.png"/></a> -->
+
+        <div class="" >
+            Hello <span style="color:white" id="userId"></span> !<br/><br/>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger bg-success" href="#" onclick="action('Buy')">Place Buy Order</a>
+                </li>
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger bg-danger" href="#" onclick="action('Sell')">Place Sell Order</a>
+                </li>
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="user_profile.html">My Profile</a>
+                </li>
+
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="login.html">Logout</a>
+                </li>
+
+            </ul>
+
+        </div>
+    </div>
+</nav>
+<section class=" text-dark mb-0" id="chart" style="margin-top:150px">
+    <div class="container">
+        <div class="row">
+        <div style="height:560px; background-color: #FFFFFF; overflow:hidden; box-sizing: border-box; border: 1px solid #56667F; border-radius: 4px; text-align: right; line-height:14px; font-size: 12px; font-feature-settings: normal; text-size-adjust: 100%; box-shadow: inset 0 -20px 0 0 #56667F;padding:1px;padding: 0px; margin: 0px; width: 50%;"><div style="height:540px; padding:0px; margin:0px; width: 100%;"><iframe src="https://widget.coinlib.io/widget?type=chart&theme=light&coin_id=859&pref_coin_id=1505" width="100%" height="536px" scrolling="auto" marginwidth="0" marginheight="0" frameborder="0" border="0" style="border:0;margin:0;padding:0;line-height:14px;"></iframe></div><div style="color: #FFFFFF; line-height: 14px; font-weight: 400; font-size: 11px; box-sizing: border-box; padding: 2px 6px; width: 100%; font-family: Verdana, Tahoma, Arial, sans-serif;"><a href="https://coinlib.io" target="_blank" style="font-weight: 500; color: #FFFFFF; text-decoration:none; font-size:11px">Cryptocurrency Prices</a>&nbsp;by Coinlib</div> </div>
+        <div style="height:560px; background-color: #FFFFFF; overflow:hidden; box-sizing: border-box; border: 1px solid #56667F; border-radius: 4px; text-align: right; line-height:14px; font-size: 12px; font-feature-settings: normal; text-size-adjust: 100%; box-shadow: inset 0 -20px 0 0 #56667F;padding:1px;padding: 0px; margin: 0px; width: 50%;"><div style="height:540px; padding:0px; margin:0px; width: 100%;"><iframe src="https://widget.coinlib.io/widget?type=chart&theme=light&coin_id=280&pref_coin_id=1505" width="100%" height="536px" scrolling="auto" marginwidth="0" marginheight="0" frameborder="0" border="0" style="border:0;margin:0;padding:0;line-height:14px;"></iframe></div><div style="color: #FFFFFF; line-height: 14px; font-weight: 400; font-size: 11px; box-sizing: border-box; padding: 2px 6px; width: 100%; font-family: Verdana, Tahoma, Arial, sans-serif;"><a href="https://coinlib.io" target="_blank" style="font-weight: 500; color: #FFFFFF; text-decoration:none; font-size:11px">Cryptocurrency Prices</a>&nbsp;by Coinlib</div></div>
+    </div>
+    </div>
+</section>
+<!-- About Section -->
+<section class=" text-dark mb-0" id="about" style="">
+    <div class="container">
+
+        <h2 class="text-center text-uppercase text-dark">Order Book</h2>
+        <hr class="star-dark mb-5">
+        <div class="form-group">
+            <input type="text" id="search" class="search form-control" placeholder="What you looking for?">
+        </div>
+        <div class="row">
+            <table class="table">
+                <th>ID</th>
+                <th>CX Type</th>
+                <th>Current Rate (To USD)</th>
+                <th>Order Category</th>
+                <th>Volume</th>
+                <th>Asking Price (USD)</th>
+                <th>By (UserId)</th>
+                <th>Date & Time</th>
+                <th>Action</th>
+                <tbody id="order_table">
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- Result Section -->
+<section class="bg-primary text-white mb-0" id="result" style="margin-top:200px">
+    <div class="container">
+        <h2 class="text-center text-uppercase text-white" id="">Trades History</h2>
+        <hr class="star-light mb-5">
+        <h2 class="text-center text-uppercase text-white" id="result_name"></h2>
+            <h3 class="text-center text-uppercase text-white" id="result_count"></h3>
+                <hr class="star-light mb-5" id='hasResult' style="display:none">
+                <div class="row">
+                   <!-- <button class="btn btn-warning" onclick="print()">Print Result</button>-->
+                    <br/>
+                    <table class="table" style="width: 100%;table-layout: fixed">
+                        <th>ID</th>
+                        <th>CX Type</th>
+                       <!-- <th>Current Rate (To USD)</th>
+                        <th>Order Category</th>-->
+                        <th>Volume</th>
+                        <th>Price (USD)</th>
+                        <th>Transaction Fee</th>
+                        <th>From (UserId)</th>
+                        <th>To (UserId)</th>
+                        <th>Date & Time</th>
+                        <th colspan="2">Transaction Id</th>
+                        <tbody id="trade_table">
+
+
+                        </tbody>
+                    </table>
+
+                </div>
+</section>
+
+<div class="modal fade" id="enrolForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold" id="modalTitle">E </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <!-- <form id="enrolForm"> -->
+            <div class="modal-body mx-3">
+                <input type="hidden" id="action_type" name="action_type" class="form-control validate">
+
+
+                <div class="md-form mb-5">
+                    <label data-error="wrong" data-success="right" for="orangeForm-name">Crypto Type</label>
+                    <select class="form-control" id="crypto_type">
+                        <option value="BTC-USD">Bitcoin - USD</option>
+                        <option value="DOGE-USD">Dogecoin - USD</option>
+                    </select>
+
+                </div>
+                <div class="md-form mb-5">
+                    <label data-error="wrong" data-success="right" for="orangeForm-email">Volume</label>
+                    <input type="text" id="volume" name="amount" class="form-control validate">
+
+                </div>
+                <div class="md-form mb-5">
+
+                    <label data-error="wrong" data-success="right" for="orangeForm-email">Rate: <span id="refRate"></span></label>
+
+                </div>
+                <div class="md-form mb-5">
+
+                    <label data-error="wrong" data-success="right" for="orangeForm-email">Asking Price (USD)</label>
+                    <input type="text" id="price" name="amount" class="form-control validate">
+                </div>
+                <div class="md-form mb-5">
+
+                    <label data-error="wrong" data-success="right" for="orangeForm-email">Trading Fee</label>
+                    <input type="text" id="tradingFee" name="amount" class="form-control validate"  value="0.1000%" disabled/>
+                </div>
+
+                <!--
+                                <div class="md-form mb-4">
+                                    <input type="text" id="enrol_phone" name="enrol_phone" class="form-control validate">
+                                    <label data-error="wrong" data-success="right" for="orangeForm-pass">Your phone</label>
+                                </div>-->
+
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button class="btn btn-success" onclick="submitAction();">Place Order</button>
+            </div>
+            <!-- </form> -->
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="actionForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold" id="action_modalTitle">E </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <!-- <form id="enrolForm"> -->
+            <div class="modal-body mx-3">
+                <input type="hidden" id="action_form_action_type" name="action_type" class="form-control validate">
+
+                <input type="hidden" id="action_form_order_id" name="action_type" class="form-control validate">
+
+                <div class="md-form mb-5">
+                    <label data-error="wrong" data-success="right" for="orangeForm-name">Crypto Type</label>
+                    <select class="form-control" id="action_crypto_type" disabled>
+                        <option value="BTC-USD">Bitcoin - USD</option>
+                        <option value="DOGE-USD">Dogecoin - USD</option>
+                    </select>
+
+                </div>
+                <div class="md-form mb-5">
+                    <label data-error="wrong" data-success="right" for="orangeForm-email">Volume</label>
+                    <input type="text" id="action_volume" name="amount" class="form-control validate" disabled>
+
+                </div>
+                <div class="md-form mb-5">
+
+                    <label data-error="wrong" data-success="right" for="orangeForm-email">From</label>
+                    <input type="text" id="action_from" name="amount" class="form-control validate"  value="" disabled/>
+                </div>
+                <div class="md-form mb-5">
+
+                    <label data-error="wrong" data-success="right" for="orangeForm-email">Rate: <span id="action_refRate"></span></label>
+
+                </div>
+                <div class="md-form mb-5">
+
+                    <label data-error="wrong" data-success="right" for="orangeForm-email">Asking Price (USD)</label>
+                    <input type="text" id="action_price" name="amount" class="form-control validate">
+                </div>
+                <div class="md-form mb-5">
+
+                    <label data-error="wrong" data-success="right" for="orangeForm-email">Trading Fee in USD (Rate: 0.1000%)</label>
+                    <input type="text" id="action_tradingFee" name="amount" class="form-control validate"  value="0" disabled/>
+                </div>
+                <div class="md-form mb-5">
+
+                    <label data-error="wrong" data-success="right" for="orangeForm-email" style="Color:darkred"><b>Total Fee in USD </b></label>
+                    <input type="text" id="action_totalFee" name="amount" class="form-control validate"  value="0" disabled/>
+                </div>
+
+                <!--
+                                <div class="md-form mb-4">
+                                    <input type="text" id="enrol_phone" name="enrol_phone" class="form-control validate">
+                                    <label data-error="wrong" data-success="right" for="orangeForm-pass">Your phone</label>
+                                </div>-->
+
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button class="btn btn-success" onclick="confirmAction();">Confirm</button>
+            </div>
+            <!-- </form> -->
+        </div>
+    </div>
+</div>
+
+
+<div class="scroll-to-top d-lg-none position-fixed ">
+    <a class="js-scroll-trigger d-block text-center text-white rounded" href="#page-top">
+        <i class="fa fa-chevron-up"></i>
+    </a>
+</div>
+
+
+<!-- Bootstrap core JavaScript -->
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Plugin JavaScript -->
+<script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+<script src="vendor/magnific-popup/jquery.magnific-popup.min.js"></script>
+
+<!-- Contact Form JavaScript -->
+<script src="js/jqBootstrapValidation.js"></script>
+<script src="js/contact_me.js"></script>
+<script src="js/lego_js.min.js"></script>
+
+</body>
+
+</html>

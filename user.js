@@ -21,4 +21,25 @@ const connection = require("./database");
 
 
 }
-module.exports = deposit;
+function createWallet(userId,btcAddr,dogeAddr){
+    try {
+        connection.query("INSERT INTO crypto_exchange.user_wallet (user_id,bitcoin_addr,dogecoin_addr) VALUES (?,?,?)",
+            [Number(userId),btcAddr,dogeAddr]
+            , function (err, fields) {
+                if (err)
+                    throw err;
+            });
+        /*   connection.query('SELECT * FROM `user` WHERE login_name = ? and login_password = ?', _login_name, _password
+               (error, results, fields) => {
+                   if (error) throw error;
+                   res.json(results);
+               }
+           );*/
+        return "OK";
+    }catch(e){
+        return "Failed";
+    }
+
+
+}
+module.exports = {deposit,createWallet};
